@@ -42,7 +42,7 @@ func LoadEnv() {
 		DBPassword:      getEnv("DB_PASSWORD", "superrahasia123"),
 		DBName:          getEnv("DB_NAME", "go-project-management"),
 		JWTSecret:       getEnv("JWT_SECRET", "supersecret"),
-		JWTExpire:       getEnv("JWT_EXPIRY", "2h"),
+		JWTExpire:       getEnv("JWT_EXPIRY", "6h"),
 		JWTRefreshToken: getEnv("REFRESH_TOKEN_EXPIRED", "24h"),
 		APPURL:          getEnv("APP_URL", "http://localhost:3030"),
 	}
