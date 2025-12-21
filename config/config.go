@@ -42,7 +42,7 @@ func LoadEnv() {
 		DBPassword:      getEnv("DB_PASSWORD", "superrahasia123"),
 		DBName:          getEnv("DB_NAME", "go-project-management"),
 		JWTSecret:       getEnv("JWT_SECRET", "supersecret"),
-		JWTExpire:       getEnv("JWT_EXPIRY", "6h"),
+		JWTExpire:       getEnv("JWT_EXPIRED", "2h"),
 		JWTRefreshToken: getEnv("REFRESH_TOKEN_EXPIRED", "24h"),
 		APPURL:          getEnv("APP_URL", "http://localhost:3030"),
 	}
@@ -61,8 +61,8 @@ func getEnv(key string, fallback string) string {
 func ConnectDB() {
 	cfg := AppConfig
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", cfg.DBHost,
-		cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta", 
+    cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

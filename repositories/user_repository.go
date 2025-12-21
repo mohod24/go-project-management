@@ -7,6 +7,7 @@ import (
 	"github.com/mohod24/go-project-management/models"
 )
 
+// UserRepository defines the interface for user data operations.
 type UserRepository interface {
 	Create(user *models.User) error
 	FindByEmail(email string) (*models.User, error)
@@ -19,32 +20,38 @@ type UserRepository interface {
 
 type userRepository struct{}
 
+// NewUserRepository creates a new instance of UserRepository.
 func NewUserRepository() UserRepository {
 	return &userRepository{}
 }
 
+// Create adds a new user to the database.
 func (r *userRepository) Create(user *models.User) error {
 	return config.DB.Create(user).Error
 }
 
+// FindByEmail retrieves a user by their email.
 func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	err := config.DB.Where("email = ?", email).First(&user).Error
 	return &user, err
 }
 
+// FindByID retrieves a user by their internal ID.
 func (r *userRepository) FindByID(id uint) (*models.User, error) {
 	var user models.User
 	err := config.DB.First(&user, id).Error
 	return &user, err
 }
 
+// FindByPublicID retrieves a user by their public ID.
 func (r *userRepository) FindByPublicID(publicID string) (*models.User, error) {
 	var user models.User
 	err := config.DB.Where("public_id = ?", publicID).First(&user).Error
 	return &user, err
 }
 
+// FindAllPagination retrieves users with pagination, filtering, and sorting.
 func (r *userRepository) FindAllPagination(filter, sort string, limit, ofset int) ([]models.User, int64, error) {
 	var users []models.User
 	var total int64
@@ -84,6 +91,7 @@ func (r *userRepository) FindAllPagination(filter, sort string, limit, ofset int
 
 }
 
+// Update modifies an existing user's information.
 func (r *userRepository) Update(user *models.User) error {
 	return config.DB.Model(&models.User{}).
 		Where("public_id = ?", user.PublicID).Updates(map[string]interface{}{
@@ -91,6 +99,7 @@ func (r *userRepository) Update(user *models.User) error {
 	}).Error
 }
 
+// Delete removes a user from the database by their internal ID.
 func (r *userRepository) Delete(id uint) error {
 	return config.DB.Delete(&models.User{}, id).Error
 }

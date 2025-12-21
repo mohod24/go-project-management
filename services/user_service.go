@@ -52,9 +52,11 @@ func (s *userService) Register(user *models.User) error {
 // Login authenticates a user with email and password.
 func (s *userService) Login(email, password string) (*models.User, error) {
 	user, err := s.repo.FindByEmail(email)
+	// Check if user exists
 	if err != nil {
 		return nil, errors.New("invalid credential")
 	}
+	// Verify password
 	if !utils.CheckPasswordHash(password, user.Password) {
 		return nil, errors.New("invalid credential")
 	}
