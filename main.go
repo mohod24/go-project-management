@@ -31,8 +31,13 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userController := controllers.NewUserController(userService)
 
+	// Initialize Board components
+	boardRepo := repositories.NewBoardRepository()
+	boardService := services.NewBoardService(boardRepo, userRepo)
+	boardController := controllers.NewBoardController(boardService)
+
 	// Setup routes
-	routes.Setup(app, userController)
+	routes.Setup(app, userController, boardController)
 	port := config.AppConfig.AppPort
 	log.Println("Server running on port " + port)
 	app.Listen(":" + port)
