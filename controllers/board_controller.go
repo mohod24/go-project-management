@@ -73,3 +73,18 @@ func (c *BoardController) UpdateBoard(ctx *fiber.Ctx) error {
 	}
 	return utils.Success(ctx, "Berhasil update board", board)
 }
+
+func (c *BoardController) AddBoardMember(ctx *fiber.Ctx) error {
+	publicID := ctx.Params("id")
+	
+	var userIDs []string
+	// Parse the request body to get user IDs
+	if err := ctx.BodyParser(&userIDs); err != nil {
+		return utils.BadRequest(ctx, "Gagal memparsing permintaan", err.Error())
+	}
+	// Add members to the board
+	if err := c.service.AddMember(publicID, userIDs); err != nil {
+		return utils.BadRequest(ctx, "Gagal menambahkan anggota", err.Error())
+	}
+	return utils.Success(ctx, "Berhasil menambahkan anggota", nil)
+}

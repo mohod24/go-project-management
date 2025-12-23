@@ -33,7 +33,8 @@ func main() {
 
 	// Initialize Board components
 	boardRepo := repositories.NewBoardRepository()
-	boardService := services.NewBoardService(boardRepo, userRepo)
+	boardMemberRepo := repositories.NewBoardMemberRepository()
+	boardService := services.NewBoardService(boardRepo, userRepo, boardMemberRepo)
 	boardController := controllers.NewBoardController(boardService)
 
 	// Setup routes
