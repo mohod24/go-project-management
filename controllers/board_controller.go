@@ -88,3 +88,17 @@ func (c *BoardController) AddBoardMember(ctx *fiber.Ctx) error {
 	}
 	return utils.Success(ctx, "Berhasil menambahkan anggota", nil)
 }
+
+func (c *BoardController) RemoveBoardMembers(ctx *fiber.Ctx) error {
+	publicID := ctx.Params("id")
+	var userIDs []string
+	// Parse the request body to get user IDs
+	if err := ctx.BodyParser(&userIDs); err != nil {
+		return utils.BadRequest(ctx, "Gagal memparsing permintaan", err.Error())
+	}
+	// Remove members from the board
+	if err := c.service.RemoveMembers(publicID, userIDs); err != nil {
+		return utils.BadRequest(ctx, "Gagal menghapus anggota", err.Error())
+	}
+	return utils.Success(ctx, "Berhasil menghapus anggota", nil)
+}

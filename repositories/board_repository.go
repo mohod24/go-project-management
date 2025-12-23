@@ -13,6 +13,7 @@ type BoardRepository interface {
 	Update(board *models.Board) error
 	FindByPublicID(publicID string) (*models.Board, error)
 	AddMember(boardID uint, userIDs []uint) error
+	RemoveMembers(boardID uint, userIDs []uint) error
 }
 
 // boardRepository implements the BoardRepository interface.
@@ -69,4 +70,13 @@ func (r *boardRepository) AddMember(boardID uint, userIDs []uint) error {
 	}
 	// Bulk insert members
 	return config.DB.Create(&members).Error
+}
+
+// RemoveMembers removes members from a board.
+func (r* boardRepository) RemoveMembers(boardID uint, userIDs []uint) error {
+	// Implementation for removing members from a board
+	if len(userIDs) == 0 {
+		return nil
+	}
+	return config.DB.Where("board_internal_id = ? AND user_internal_id IN ?", boardID, userIDs).Delete(&models.BoardMember{}).Error
 }

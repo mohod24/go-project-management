@@ -14,6 +14,7 @@ type BoardService interface {
 	Update(board *models.Board) error
 	GetByPublicID(publicID string) (*models.Board, error)
 	AddMember(boardPublicID string, userPublicIDs []string) error
+	RemoveMembers(boardPublicID string, userPublicIDs []string) error
 }
 
 // boardService implements the BoardService interface.
@@ -95,4 +96,47 @@ func (s *boardService) AddMember(boardPublicID string, userPublicIDs []string) e
 	
 	// tambahkan member baru
 	return s.boardRepo.AddMember(uint(board.InternalID), newMemberIDs)
+}
+
+// RemoveMembers removes members from a board.
+func (s *boardService) RemoveMembers(boardPublicID string, userPublicIDs []string) error {
+	board, err := s.boardRepo.FindByPublicID(boardPublicID)
+	if err != nil {
+		return errors.New("board not found")
+	}
+	// Convert user public IDs to internal IDs
+	var userInternalIDs []uint
+	for _, userPublicID := range userPublicIDs {
+		user, err := s.userRepo.FindByPublicID(userPublicID)
+		if err != nil {
+			return errors.New("user not found: " + userPublicID)
+		}
+		userInternalIDs = append(userInternalIDs, uint(user.InternalID))
+	}
+	// Cek keanggotaaan sebelum dihapus
+	existingMembers, err := s.boardMemberRepo.GetMembers(string(boardPublicID))
+	if err != nil {
+		return errors.New("failed to check existing members")
+	}
+	// cek cepat pakai map
+	memberMap := make(map[uint]bool)
+	// isi memberMap dengan existingMembers
+	for _, member := range existingMembers {
+		memberMap[uint(member.InternalID)] = true //memberMap[1] = true
+	}
+	// filter userInternalIDs yang menjadi member
+	// misal userInternalIDs = [1,2,3,4], memberMap[1]=true, memberMap[3]=true
+	// maka membersToRemove = [1,3]
+	var membersToRemove []uint
+	for _, userID := range userInternalIDs {
+		// jika userID ada di memberMap, berarti dia member dan bisa dihapus
+		if memberMap[userID] {
+			membersToRemove = append(membersToRemove, userID)
+		}
+	}
+	if len(membersToRemove) == 0 {
+		return nil // tidak ada member untuk dihapus
+	}
+	// Remove members from the board
+	return s.boardRepo.RemoveMembers(uint(board.InternalID), membersToRemove)
 }
